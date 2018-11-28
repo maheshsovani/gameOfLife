@@ -12,4 +12,9 @@ validateNeighbours = function(universeSize,neighbour) {
   return !isNeighbourValid;
 }
 
-module.exports = { zipper, validateNeighbours };
+const contains = function(currentGeneration, neighbour) {
+  let isContained = currentGeneration.some(function(cell) { return cell[0]===neighbour[0] && cell[1] === neighbour[1]});
+  return isContained;
+}
+
+module.exports = { zipper, validateNeighbours, contains};

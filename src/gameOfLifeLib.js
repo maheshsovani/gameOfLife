@@ -1,5 +1,5 @@
 const readline = require('readline-sync');
-const {zipper, validateNeighbours} = require('./gameOfLifeUtil.js');
+const {zipper, validateNeighbours, contains} = require('./gameOfLifeUtil.js');
 
 const handleUserInput = function(){
   let universeSize = +readline.question("Please enter size of the universe \n");
@@ -36,12 +36,12 @@ const findAllNeighbours = function(universeSize){
   return allNeighbours;
 }
 
-calculateAliveNeighboursOfCell = function(allNeighbours, initialGeneration, cell){
+calculateAliveNeighboursOfCell = function(allNeighbours, currentGeneration, cell){
     let numberOfAliveNeighbours = 0;
     let neighboursOfCell = allNeighbours[cell];
     for (let neighbour of neighboursOfCell){
-      let currentStatus = initialGeneration[neighbour[0]][neighbour[1]] ;
-      if(currentStatus == 'A'){numberOfAliveNeighbours ++ }
+      let isAlive = contains(currentGeneration, neighbour); 
+      if(isAlive) { numberOfAliveNeighbours++; }
     }
     return numberOfAliveNeighbours;
 }
@@ -51,11 +51,27 @@ const aliveNeighboursCalculator = function(result, cell) {
   return result;
 }
 
-const calculateAliveNeighbours = function(allNeighbours, initialGeneration){
+
+const calculateAliveNeighbours = function(allNeighbours, currentGeneration){
   let cells = Object.keys(allNeighbours);
-  calculateAliveNeighboursOfCell = calculateAliveNeighboursOfCell.bind(null, allNeighbours, initialGeneration);
-  let numberOfAliveNeighbours = cells.reduce(aliveNeighboursCalculator, {});
-  return numberOfAliveNeighbours;
+  calculateAliveNeighboursOfCell = calculateAliveNeighboursOfCell.bind(null, allNeighbours, currentGeneration);
+  let neighboursState = cells.reduce(aliveNeighboursCalculator, {});
+  return neighboursState;
 }
 
+const checkAlive = function(allNeighbours,currentGeneration){
+  let neighboursState = calculateAliveNeighbours(allNeighbours,currentGeneration);
+  let aliveCells = [];
+  let allCells = Object.keys(neighboursState);
+  for (let cell of allCells){
+    if(neighboursState[cell] == 2 || neighboursState[cell] == 3 ){
+      aliveCells.push(JSON.parse(cell));
+    }
+  }
+  return aliveCells;
+}
+
+let currentGeneration = [[0,1],[1,1],[2,1]];
+let allNeighbours = findAllNeighbours(4);
+console.log(checkAlive(allNeighbours,currentGeneration));
 module.exports = {findNeighboursOfCell, findAllNeighbours, calculateAliveNeighbours};
