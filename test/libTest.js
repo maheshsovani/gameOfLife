@@ -40,3 +40,15 @@ describe("findAllNeighbours ",function(){
     assert.deepEqual(findAllNeighbours(5),expectedOutput);
   })
 });
+
+describe("calculateAllAliveNeighbours",function(){
+  it("should return an object of having four keys of four cell and their respective alive neighbours",function(){
+    let initialGeneration = [['A', 'D'],['D', 'A']];
+    let allNeighbours = { '[0,0]' : [[0,1],[1,0],[1,1]],
+                          '[0,1]' : [[0,0],[1,0],[1,1]],
+                          '[1,0]' : [[0,0],[0,1],[1,1]],
+                          '[1,1]' : [[0,0],[0,1],[1,0]] };
+    let expectedOutput = {'[0,0]' : 1, '[0,1]' : 2, '[1,0]' : 2, '[1,1]' : 1}
+    assert.deepEqual(calculateAllAliveNeighbours(allNeighbours, initialGeneration),expectedOutput);
+  })
+});

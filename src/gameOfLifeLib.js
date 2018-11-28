@@ -27,16 +27,36 @@ const findNeighboursOfCell = function(cell,universeSize) {
 }
 
 const findAllNeighbours = function(universeSize){
-  let neighbours = {}
+  let allNeighbours = {}
   for (let row = 0; row<universeSize;row++) {
     for (let column = 0; column<universeSize;column++) {
-      neighbours["["+row+", "+column+"]"] = findNeighboursOfCell([row,column], universeSize);
+      allNeighbours["["+row+", "+column+"]"] = findNeighboursOfCell([row,column], universeSize);
     }
   }
-  return neighbours;
+  return allNeighbours;
 }
 
-const calculateAllAliveNeighbours = function(){
+const aliveNeighboursOfCellCalculator = function(allNeighbours, initialGeneration){
+  return function(cell) {
+    let numberOfAliveNeighbours = 0;
+    let neighboursOfCell = allNeighbours[cell];
+    for (let neighbour of neighboursOfCell){
+      let currentStatus = initialGeneration[neighbour[0]][neighbour[1]] ;
+      if(currentStatus == 'A'){numberOfAliveNeighbours ++ }
+    }
+    return numberOfAliveNeighbours;
+  }
 }
 
-module.exports = {findNeighboursOfCell, findAllNeighbours};
+const calculateAllAliveNeighbours = function(allNeighbours, initialGeneration){
+  let cells = Object.keys(allNeighbours);
+  let numberOfAliveNeighboursOfEachCell = {};
+  let calculateAliveNeighboursOfCell = aliveNeighboursOfCellCalculator(allNeighbours, initialGeneration);
+  for(let cell of cells) {
+    let numberOfAliveCells = calculateAliveNeighboursOfCell(cell); 
+    numberOfAliveNeighboursOfEachCell[cell] = numberOfAliveCells;
+  }
+  return numberOfAliveNeighboursOfEachCell;
+}
+
+module.exports = {findNeighboursOfCell, findAllNeighbours, calculateAllAliveNeighbours};
