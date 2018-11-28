@@ -32,4 +32,13 @@ describe("findAllNeighbours ",function(){
     let expectedOutput = JSON.parse(allOutputs[0]);
     assert.deepEqual(findAllNeighbours(3),expectedOutput);
   })
+  it("should return an object of neighbours of nine cells",function(){
+    let expectedOutput = JSON.parse(allOutputs[1]);
+    assert.deepEqual(findAllNeighbours(4),expectedOutput);
+  })
+  it("should return an object of neighbours of nine cells",function(){
+    let expectedOutput = JSON.parse(allOutputs[2]);
+    assert.deepEqual(findAllNeighbours(5),expectedOutput);
+  })
+
 });
