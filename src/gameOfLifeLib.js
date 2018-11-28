@@ -1,4 +1,5 @@
 const readline = require('readline-sync');
+const {findAllNeighbours} = require('./gameOfLifeUtil.js');
 
 const handleUserInput = function(){
   let universeSize = +readline.question("Please enter size of the universe \n");
@@ -10,7 +11,11 @@ const handleUserInput = function(){
      initialUniverseState[row][column] = readline.question("[ "+row+" , "+column+" ]  :  ");
     }
   }
-  requiredGeneration = +readline.question("Please enter the reequired generation of given state \n");
+  requiredGeneration = +readline.question("Please enter the required generation of given state \n");
+  return initialUniverseState;
 }
 
-handleUserInput();
+//console.log(handleUserInput());
+console.log(findAllNeighbours(3));
+console.log(findAllNeighbours(4));
+console.log(findAllNeighbours(5));
