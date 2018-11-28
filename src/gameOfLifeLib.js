@@ -1,5 +1,5 @@
 const readline = require('readline-sync');
-const {findAllNeighbours} = require('./gameOfLifeUtil.js');
+const {zipper, validateNeighbours} = require('./gameOfLifeUtil.js');
 
 const handleUserInput = function(){
   let universeSize = +readline.question("Please enter size of the universe \n");
@@ -15,7 +15,28 @@ const handleUserInput = function(){
   return initialUniverseState;
 }
 
-//console.log(handleUserInput());
-console.log(findAllNeighbours(3));
-console.log(findAllNeighbours(4));
-console.log(findAllNeighbours(5));
+const findNeighboursOfCell = function(cell,universeSize) {
+  let xCoordinates = [cell[0]-1, cell[0], cell[0]+1];
+  let yCoordinates = [cell[1]-1, cell[1], cell[1]+1];
+  let zip = zipper(yCoordinates);
+  let allNeighbours = xCoordinates.reduce(zip, []);
+  allNeighbours.splice(4,1);
+  let validateNeighbour = validateNeighbours.bind(null,universeSize-1);
+  let allValidNeighbours = allNeighbours.filter(validateNeighbour);
+  return allValidNeighbours;
+}
+
+const findAllNeighbours = function(universeSize){
+  let neighbours = {}
+  for (let row = 0; row<universeSize;row++) {
+    for (let column = 0; column<universeSize;column++) {
+      neighbours["["+row+", "+column+"]"] = findNeighboursOfCell([row,column], universeSize);
+    }
+  }
+  return neighbours;
+}
+
+const calculateAllAliveNeighbours = function(){
+}
+
+module.exports = {findNeighboursOfCell, findAllNeighbours};
