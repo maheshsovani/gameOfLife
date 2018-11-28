@@ -53,9 +53,8 @@ const aliveNeighboursCalculator = function(result, cell) {
 
 const calculateAliveNeighbours = function(allNeighbours, initialGeneration){
   let cells = Object.keys(allNeighbours);
-  let numberOfAliveNeighbours = {};
   calculateAliveNeighboursOfCell = calculateAliveNeighboursOfCell.bind(null, allNeighbours, initialGeneration);
-  numberOfAliveNeighbours = cells.reduce(aliveNeighboursCalculator, {});
+  let numberOfAliveNeighbours = cells.reduce(aliveNeighboursCalculator, {});
   return numberOfAliveNeighbours;
 }
 
