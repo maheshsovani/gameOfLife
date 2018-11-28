@@ -1,6 +1,6 @@
 const assert = require('assert');
 const fs = require('fs');
-const {findNeighboursOfCell, findAllNeighbours , calculateAllAliveNeighbours} = require('../src/gameOfLifeLib.js');
+const {findNeighboursOfCell, findAllNeighbours , calculateAliveNeighbours} = require('../src/gameOfLifeLib.js');
 
 describe("findNeighboursOfCell ",function(){
   it("should return an array of three neighbours",function(){
@@ -41,7 +41,7 @@ describe("findAllNeighbours ",function(){
   })
 });
 
-describe("calculateAllAliveNeighbours",function(){
+describe("calculateAliveNeighbours",function(){
   it("should return an object of having four keys of four cell and their respective alive neighbours",function(){
     let initialGeneration = [['A', 'D'],['D', 'A']];
     let allNeighbours = { '[0,0]' : [[0,1],[1,0],[1,1]],
@@ -49,6 +49,6 @@ describe("calculateAllAliveNeighbours",function(){
                           '[1,0]' : [[0,0],[0,1],[1,1]],
                           '[1,1]' : [[0,0],[0,1],[1,0]] };
     let expectedOutput = {'[0,0]' : 1, '[0,1]' : 2, '[1,0]' : 2, '[1,1]' : 1}
-    assert.deepEqual(calculateAllAliveNeighbours(allNeighbours, initialGeneration),expectedOutput);
+    assert.deepEqual(calculateAliveNeighbours(allNeighbours, initialGeneration),expectedOutput);
   })
 });

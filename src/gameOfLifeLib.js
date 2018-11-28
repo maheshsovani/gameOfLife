@@ -21,7 +21,7 @@ const findNeighboursOfCell = function(cell,universeSize) {
   let zip = zipper(yCoordinates);
   let allNeighbours = xCoordinates.reduce(zip, []);
   allNeighbours.splice(4,1);
-  let validateNeighbour = validateNeighbours.bind(null,universeSize-1);
+  validateNeighbour = validateNeighbours.bind(null,universeSize-1);
   let allValidNeighbours = allNeighbours.filter(validateNeighbour);
   return allValidNeighbours;
 }
@@ -36,8 +36,7 @@ const findAllNeighbours = function(universeSize){
   return allNeighbours;
 }
 
-const aliveNeighboursOfCellCalculator = function(allNeighbours, initialGeneration){
-  return function(cell) {
+calculateAliveNeighboursOfCell = function(allNeighbours, initialGeneration, cell){
     let numberOfAliveNeighbours = 0;
     let neighboursOfCell = allNeighbours[cell];
     for (let neighbour of neighboursOfCell){
@@ -45,18 +44,19 @@ const aliveNeighboursOfCellCalculator = function(allNeighbours, initialGeneratio
       if(currentStatus == 'A'){numberOfAliveNeighbours ++ }
     }
     return numberOfAliveNeighbours;
-  }
 }
 
-const calculateAllAliveNeighbours = function(allNeighbours, initialGeneration){
+const aliveNeighboursCalculator = function(result, cell) {
+  result[cell] = calculateAliveNeighboursOfCell(cell);
+  return result;
+}
+
+const calculateAliveNeighbours = function(allNeighbours, initialGeneration){
   let cells = Object.keys(allNeighbours);
-  let numberOfAliveNeighboursOfEachCell = {};
-  let calculateAliveNeighboursOfCell = aliveNeighboursOfCellCalculator(allNeighbours, initialGeneration);
-  for(let cell of cells) {
-    let numberOfAliveCells = calculateAliveNeighboursOfCell(cell); 
-    numberOfAliveNeighboursOfEachCell[cell] = numberOfAliveCells;
-  }
-  return numberOfAliveNeighboursOfEachCell;
+  let numberOfAliveNeighbours = {};
+  calculateAliveNeighboursOfCell = calculateAliveNeighboursOfCell.bind(null, allNeighbours, initialGeneration);
+  numberOfAliveNeighbours = cells.reduce(aliveNeighboursCalculator, {});
+  return numberOfAliveNeighbours;
 }
 
-module.exports = {findNeighboursOfCell, findAllNeighbours, calculateAllAliveNeighbours};
+module.exports = {findNeighboursOfCell, findAllNeighbours, calculateAliveNeighbours};
