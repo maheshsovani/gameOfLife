@@ -8,70 +8,75 @@ const handleUserInput = function(){
   console.log("Enter the states of following cells\n");
   for (let row = 0; row<universeSize;row++) {
     for (let column = 0; column<universeSize;column++) {
-     initialUniverseState[row][column] = readline.question("[ "+row+" , "+column+" ]  :  ");
+      initialUniverseState[row][column] = readline.question("[ "+row+" , "+column+" ]  :  ");
     }
   }
   requiredGeneration = +readline.question("Please enter the required generation of given state \n");
   return initialUniverseState;
 }
 
-const findNeighboursOfCell = function(cell,universeSize) {
+const findNeighboursOfCell = function(cell,endPoint) {
   let xCoordinates = [cell[0]-1, cell[0], cell[0]+1];
   let yCoordinates = [cell[1]-1, cell[1], cell[1]+1];
   let zip = zipper(yCoordinates);
   let allNeighbours = xCoordinates.reduce(zip, []);
   allNeighbours.splice(4,1);
-  validateNeighbour = validateNeighbours.bind(null,universeSize-1);
+  validateNeighbour = validateNeighbours.bind(null,endPoint);
   let allValidNeighbours = allNeighbours.filter(validateNeighbour);
   return allValidNeighbours;
 }
 
-const findAllNeighbours = function(universeSize){
+const findAllNeighbours = function(bounds){
   let allNeighbours = {}
-  for (let row = 0; row<universeSize;row++) {
-    for (let column = 0; column<universeSize;column++) {
-      allNeighbours["["+row+", "+column+"]"] = findNeighboursOfCell([row,column], universeSize);
+  let startPoint= bounds.topLeft[0];
+  let endPoint= bounds.bottomRight[0];
+  for (let row = startPoint; row<=endPoint;row++) {
+    for (let column = startPoint; column<=endPoint ; column++) {
+      allNeighbours["["+row+", "+column+"]"] = findNeighboursOfCell([row, column], endPoint);
     }
   }
   return allNeighbours;
 }
 
-calculateAliveNeighboursOfCell = function(allNeighbours, currentGeneration, cell){
-    let numberOfAliveNeighbours = 0;
-    let neighboursOfCell = allNeighbours[cell];
-    for (let neighbour of neighboursOfCell){
-      let isAlive = contains(currentGeneration, neighbour); 
-      if(isAlive) { numberOfAliveNeighbours++; }
-    }
-    return numberOfAliveNeighbours;
+const calculateAliveNeighboursOfCell = function(allNeighbours, currentGeneration, cell){
+  let numberOfAliveNeighbours = 0;
+  let neighboursOfCell = allNeighbours[cell];
+  for (let neighbour of neighboursOfCell){
+    let isAlive = contains(currentGeneration, neighbour); 
+    if(isAlive) { numberOfAliveNeighbours++; }
+  }
+  return numberOfAliveNeighbours;
 }
 
-const aliveNeighboursCalculator = function(result, cell) {
-  result[cell] = calculateAliveNeighboursOfCell(cell);
-  return result;
+const aliveNeighboursCalculator = function(allNeighbours, currentGeneration) {
+  return function(result, cell) {
+    result[cell] = calculateAliveNeighboursOfCell(allNeighbours, currentGeneration, cell);
+    return result;
+  }
 }
 
 
 const calculateAliveNeighbours = function(allNeighbours, currentGeneration){
   let cells = Object.keys(allNeighbours);
-  calculateAliveNeighboursOfCell = calculateAliveNeighboursOfCell.bind(null, allNeighbours, currentGeneration);
-  let neighboursState = cells.reduce(aliveNeighboursCalculator, {});
+  let aliveNeighboursOfEachCell = aliveNeighboursCalculator(allNeighbours, currentGeneration);
+  let neighboursState = cells.reduce(aliveNeighboursOfEachCell, {});
   return neighboursState;
 }
 
-const checkAlive = function(allNeighbours,currentGeneration){
+const nextGeneration = function(currentGeneration,bounds){
+  let allNeighbours = findAllNeighbours(bounds);
   let neighboursState = calculateAliveNeighbours(allNeighbours,currentGeneration);
   let aliveCells = [];
   let allCells = Object.keys(neighboursState);
   for (let cell of allCells){
-    if(neighboursState[cell] == 2 || neighboursState[cell] == 3 ){
+    if(neighboursState[cell] == 3 ){
+      aliveCells.push(JSON.parse(cell));
+    }
+    if(neighboursState[cell] == 2 && contains(currentGeneration,JSON.parse(cell))){
       aliveCells.push(JSON.parse(cell));
     }
   }
   return aliveCells;
 }
 
-let currentGeneration = [[0,1],[1,1],[2,1]];
-let allNeighbours = findAllNeighbours(4);
-console.log(checkAlive(allNeighbours,currentGeneration));
-module.exports = {findNeighboursOfCell, findAllNeighbours, calculateAliveNeighbours};
+module.exports = {findNeighboursOfCell, findAllNeighbours, calculateAliveNeighbours, nextGeneration};
